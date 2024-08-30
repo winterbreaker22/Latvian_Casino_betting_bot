@@ -260,7 +260,28 @@ async def login_spelet(page):
     await login_btn.click()
 
 async def pool_spelet(page):
-    
+    await page.goto("https://spelet.lv/line/tennis")
+    await asyncio.sleep(10)
+
+    while True:
+        if bet_time:
+            bet = True
+            if winner_info["first"]["site"] == "spelet":
+                who = "first"
+            elif winner_info["second"]["site"] == "spelet":
+                who = "second"
+            else:
+                bet = False 
+            if bet:  
+                print ("Spelet entered")
+                try:
+                    odd_element = page.locator(f"text={winner_info[who]["odd"]}")
+                    await odd_element.click()
+                except TimeoutError as error:
+                    print (error)
+
+                bet_time = False
+        await asyncio.sleep(1)   
 
 
 # Main function to run browsers simultaneously
