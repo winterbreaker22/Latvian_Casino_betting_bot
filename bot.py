@@ -283,6 +283,18 @@ async def pool_spelet(page):
                 bet_time = False
         await asyncio.sleep(1)   
 
+async def run_spelet(playwright):
+    global bet_time
+    global winner_info
+    global old_winner_info
+    global tennis_category
+    
+    browser = await playwright.chromium.launch(headless=False)
+    context = await browser.new_context(locale="en-US")
+    page = await context.new_page()
+
+    await login_spelet(page)
+    await pool_spelet(page)
 
 # Main function to run browsers simultaneously
 async def main():
