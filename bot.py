@@ -37,9 +37,9 @@ async def extract_info(page) -> dict:
         "category": "",
     }
 
-    first_odd = await page.query_selector('tr:first-of-type td:nth-of-type(4) h2:first-of-type')
+    first_odd = await page.query_selector('#odds1_value')
     winner["first"]["odd"] = await first_odd.text_content()
-    second_odd = await page.query_selector('tr:first-of-type td:nth-of-type(4) h2:last-of-type')
+    second_odd = await page.query_selector('#odds1_value')
     winner["second"]["odd"] = await second_odd.text_content()
     first_wager = await page.query_selector('tr:first-of-type td:nth-of-type(5) h3:first-of-type')
     first_wager_value = await first_wager.text_content()
@@ -126,6 +126,10 @@ async def login_x3000(page):
         await unnecessary.click()
 
 async def pool_x3000(page):
+    global bet_time
+    global winner_info
+    global old_winner_info
+    
     await page.goto("https://www.x3000.lv/betting?flowType=gamingOverview#sports-hub/tennis")
     await asyncio.sleep(10)
 
@@ -211,6 +215,10 @@ async def login_tonybet(page):
     await login_btn.click()
 
 async def pool_tonybet(page):
+    global bet_time
+    global winner_info
+    global old_winner_info
+
     await page.goto("https://tonybet.lv/live/tennis")
     await asyncio.sleep(10)
 
@@ -253,13 +261,17 @@ async def login_spelet(page):
 
     login = page.locator(f'text=Come in')
     await login.click()
-    await page.fill('input[name="username"]', "retssrets@gmail.com")
-    await page.fill('input[type="password"]', "Upwork!1234")
+    await page.fill('input[name="username"]', "37129227571")
+    await page.fill('input[type="password"]', "Upwork1234!")
 
     login_btn = page.locator(f'button[type="submit"]')
     await login_btn.click()
 
 async def pool_spelet(page):
+    global bet_time
+    global winner_info
+    global old_winner_info
+    
     await page.goto("https://spelet.lv/line/tennis")
     await asyncio.sleep(10)
 
@@ -301,11 +313,11 @@ async def main():
     async with async_playwright() as playwright:
         task_main = asyncio.create_task(run_rr(playwright))
         task_x3000 = asyncio.create_task(run_x3000(playwright))
-        task_tonybet = asyncio.create_task(run_tonybet(playwright))
-        task_spelet = asyncio.create_task(run_spelet(playwright))
+        # task_tonybet = asyncio.create_task(run_tonybet(playwright))
+        # task_spelet = asyncio.create_task(run_spelet(playwright))
 
-        await asyncio.gather(task_main, task_x3000, task_tonybet, task_spelet)
-        # await asyncio.gather(task_main, task_tonybet)
+        # await asyncio.gather(task_main, task_x3000, task_tonybet, task_spelet)
+        await asyncio.gather(task_main, task_x3000)
 
 if __name__ == "__main__":
     asyncio.run(main())
