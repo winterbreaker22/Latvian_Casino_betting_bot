@@ -38,26 +38,37 @@ async def extract_info(page) -> dict:
     }
 
     first_odd = await page.query_selector('#odds1_value')
-    winner["first"]["odd"] = await first_odd.text_content()
+    if first_odd:
+        winner["first"]["odd"] = await first_odd.text_content()
     second_odd = await page.query_selector('#odds1_value')
-    winner["second"]["odd"] = await second_odd.text_content()
-    first_wager = await page.query_selector('tr:first-of-type td:nth-of-type(5) h3:first-of-type')
-    first_wager_value = await first_wager.text_content()
-    second_wager = await page.query_selector('tr:first-of-type td:nth-of-type(5) h3:last-of-type')
-    second_wager_value = await second_wager.text_content()
-    winner["first"]["wager"] = first_wager_value.split(' ')[1]
-    winner["second"]["wager"] = second_wager_value.split(' ')[1]
-    category_element = await page.query_selector('tr:first-of-type td:first-of-type > span:nth-of-type(2)')
-    winner["category"] = await category_element.text_content()
-    first_site_element = await page.query_selector('tr:first-of-type td:last-of-type a:first-of-type')
-    winner["first"]["site"] = await first_site_element.text_content()
-    second_site_element = await page.query_selector('tr:first-of-type td:last-of-type a:last-of-type')
-    winner["second"]["site"] = await second_site_element.text_content()
-    name = await page.query_selector('tr:first-of-type td:first-of-type h2')
-    both_name = await name.text_content()
-    winner["first"]["name"] = both_name.split('vs.')[0].strip()
-    winner["second"]["name"] = both_name.split('vs.')[1].strip()
+    if second_odd:
+        winner["second"]["odd"] = await second_odd.text_content()
+    first_wager = await page.query_selector('#wagger1')
+    if first_wager:
+        first_wager_value = await first_wager.text_content()
+        winner["first"]["wager"] = first_wager_value.split(' ')[1]
+    second_wager = await page.query_selector('#wagger2')
+    if second_wager:
+        second_wager_value = await second_wager.text_content()
+        winner["second"]["wager"] = second_wager_value.split(' ')[1]
+    category_element = await page.query_selector('#competition')
+    if category_element:
+        category_text = await category_element.text_content()
+        winner["category"] = category_text.split(' | ')[1]
+    first_site_element = await page.query_selector('#site1')
+    if first_site_element:
+        winner["first"]["site"] = await first_site_element.text_content()
+    second_site_element = await page.query_selector('#site2')
+    if second_site_element:
+        winner["second"]["site"] = await second_site_element.text_content()
+    first_name = await page.query_selector('#home-teams')
+    second_name = await page.query_selector('#away-team')
+    if first_name:
+        winner["first"]["name"] = first_name.text_content()
+    if second_name:
+        winner["second"]["name"] = second_name.text_content()
 
+    print (winner)
     return winner
 
 async def run_rr(playwright):
@@ -73,17 +84,17 @@ async def run_rr(playwright):
     # Navigate to the first URL
     await page.goto("https://www.rr28.xyz/")
     await asyncio.sleep(40)
-    text_to_find = "History"
-    try:
-        element = await page.wait_for_selector(f"text={text_to_find}", timeout=5000)
-        if element:
-            print(f"History entered.")
-            await element.click()
-            await asyncio.sleep(3)
-        else:
-            print(f"History button not found.")
-    except TimeoutError as error:
-        print(error)
+    # text_to_find = "History"
+    # try:
+    #     element = await page.wait_for_selector(f"text={text_to_find}", timeout=5000)
+    #     if element:
+    #         print(f"History entered.")
+    #         await element.click()
+    #         await asyncio.sleep(3)
+    #     else:
+    #         print(f"History button not found.")
+    # except TimeoutError as error:
+    #     print(error)
 
     while True:
         winner_info = await extract_info(page)
@@ -271,7 +282,7 @@ async def pool_spelet(page):
     global bet_time
     global winner_info
     global old_winner_info
-    
+
     await page.goto("https://spelet.lv/line/tennis")
     await asyncio.sleep(10)
 
