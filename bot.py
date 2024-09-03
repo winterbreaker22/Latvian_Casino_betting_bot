@@ -40,7 +40,7 @@ async def extract_info(page) -> dict:
     first_odd = await page.query_selector('#odds1_value')
     if first_odd:
         winner["first"]["odd"] = await first_odd.text_content()
-    second_odd = await page.query_selector('#odds1_value')
+    second_odd = await page.query_selector('#odds2_value')
     if second_odd:
         winner["second"]["odd"] = await second_odd.text_content()
     first_wager = await page.query_selector('#wagger1')
@@ -68,7 +68,6 @@ async def extract_info(page) -> dict:
     if second_name:
         winner["second"]["name"] = second_name.text_content()
 
-    print (winner)
     return winner
 
 async def run_rr(playwright):
@@ -132,7 +131,7 @@ async def login_x3000(page):
     await login_btn.click()
     await asyncio.sleep(10)
 
-    unnecessary = page.locator('#flow-content-container path')
+    unnecessary = page.locator('#flow-content-container path:first-of-type')
     if await unnecessary.is_visible():
         await unnecessary.click()
 
@@ -224,6 +223,7 @@ async def login_tonybet(page):
     await page.fill('input[type="password"]', "Upwork1234!")
     login_btn = page.locator(f'button[type="submit"]')
     await login_btn.click()
+    await asyncio.sleep(10)
 
 async def pool_tonybet(page):
     global bet_time
@@ -277,6 +277,7 @@ async def login_spelet(page):
 
     login_btn = page.locator(f'button[type="submit"]')
     await login_btn.click()
+    await asyncio.sleep(10)
 
 async def pool_spelet(page):
     global bet_time
