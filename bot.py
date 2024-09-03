@@ -246,7 +246,23 @@ async def pool_tonybet(page):
                 print ("tonybet entered")
                 try:
                     odd_element = page.locator(f"text={winner_info[who]["odd"]}")
-                    await odd_element.click()
+                    if await odd_element.is_visible():
+                        await odd_element.click()
+                        print(f"{odd_element} selected.")
+                        await asyncio.sleep(1)
+
+                        # Bet Wager
+                        # wager_element = frame.locator("div.mod-KambiBC-betslip").locator("input.mod-KambiBC-stake-input")
+                        # await wager_element.fill(winner_info[who]["wager"])
+                        # bet_btn = frame.locator("button.mod-KambiBC-betslip__place-bet-btn")
+                        # await bet_btn.click()
+                        # bet_slip = frame.locator("button.mod-KambiBC-betslip-button--highlighted")
+                        # await bet_slip.click()
+
+                    else:
+                        print(f"{odd_element} not found.")
+                        bet_time = False
+                        old_winner_info = winner_info
                 except TimeoutError as error:
                     print (error)
 
@@ -300,7 +316,21 @@ async def pool_spelet(page):
                 print ("Spelet entered")
                 try:
                     odd_element = page.locator(f"text={winner_info[who]["odd"]}")
-                    await odd_element.click()
+                    if await odd_element.is_visible():
+                        await odd_element.click()
+                        print(f"{odd_element} selected.")
+                        await asyncio.sleep(1)
+
+                        # Bet Wager
+                        wager_element = page.locator("#remote-view .coupon-main-tab__content .coupon-amount").locator("input[type='text']")
+                        await wager_element.fill(winner_info[who]["wager"])
+                        bet_btn = page.locator("#remote-view .coupon-main-tab__content .coupon-buttons").locator('button[type="button"]')
+                        await bet_btn.click()
+                        
+                    else:
+                        print(f"{odd_element} not found.")
+                        bet_time = False
+                        old_winner_info = winner_info
                 except TimeoutError as error:
                     print (error)
 
