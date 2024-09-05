@@ -224,8 +224,15 @@ async def login_tonybet(page):
     await page.goto("https://tonybet.lv/en/")
     await asyncio.sleep(10)
 
-    login = page.locator(f'text=IELOGOTIES')
+    login = page.locator(f'text=Log in')
+    login_lv = page.locator(f'text=Ielogoties')
+    if await login.is_visible():
+        await login.click()
+    else:
+        await login_lv.click()
     await login.click()
+    password_provider = page.locator("button[data-test='passwordProviderButton']")
+    await password_provider.click()
     await page.fill('input[type="email"]', "retssrets@gmail.com")
     await page.fill('input[type="password"]', "Upwork1234!")
     login_btn = page.locator(f'button[type="submit"]')
@@ -286,8 +293,6 @@ async def run_tonybet(playwright):
     context = await browser.new_context(locale="en-US")
     page = await context.new_page()
 
-    page.set_viewport_size({"width": 640, "height": 360})
-
     await login_tonybet(page)
     await pool_tonybet(page)
 
@@ -295,7 +300,12 @@ async def login_spelet(page):
     await page.goto("https://spelet.lv/")
     await asyncio.sleep(10)
 
-    login = page.locator(f'text=Come in')
+    login = page.locator('header').locator(f'text=Come in')
+    login_lv = page.locator('header').locator(f'text=Ienākt')
+    if await login.is_visible():
+        await login.click()
+    else:
+        await login_lv.click()
     await login.click()
     await page.fill('input[name="username"]', "37129227571")
     await page.fill('input[type="password"]', "Upwork1234!")
@@ -363,12 +373,12 @@ async def run_spelet(playwright):
 async def main():
     async with async_playwright() as playwright:
         task_main = asyncio.create_task(run_rr(playwright))
-        task_x3000 = asyncio.create_task(run_x3000(playwright))
+        # task_x3000 = asyncio.create_task(run_x3000(playwright))
         # task_tonybet = asyncio.create_task(run_tonybet(playwright))
-        # task_spelet = asyncio.create_task(run_spelet(playwright))
+        task_spelet = asyncio.create_task(run_spelet(playwright))
 
         # await asyncio.gather(task_main, task_x3000, task_tonybet, task_spelet)
-        await asyncio.gather(task_main, task_x3000)
+        await asyncio.gather(task_main, task_spelet)
 
 if __name__ == "__main__":
     asyncio.run(main())
