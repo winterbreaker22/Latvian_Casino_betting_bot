@@ -5,7 +5,34 @@ SPELET_LINK = 'https://spelet.lv/'
 
 WAGER = 100
 
-TENNIS_COMPETITION_TRANS: dict = {
+COMPETITION_PARSE: dict = {
+    "X3000": {
+        "Tennis": {
+            "ITF. Madrid": [
+                "ITF Men",
+                "Madrid",
+            ],
+            "Challenger. Genoa": [
+                "Challenger",
+                "Genoa",
+            ],
+            "ITF. Leiria. Women": [
+                "ITF Women",
+                "Leiria",
+            ],
+            "Challenger. Cassis": [
+                "Challenger Doubles",
+                "Cassis",
+            ],
+        },
+    },
+}
+
+COMPETITION_TRANS: dict = {
+    "Tennis": "Teniss",
+    "Football": "Futbols",
+    "Baseball": "Beisbols",
+
     "Grand Slam": "Grand Slam",
     "ATP": "ATP",
     "WTA": "WTA",
@@ -17,4 +44,7 @@ TENNIS_COMPETITION_TRANS: dict = {
     "ITF Men Qual.": "ITF Viriešu Kvalifikācijas Turnīrs",
     "ITF Women": "ITF Sieviešu Vienspēles",
     "WTA Doubles": "WTA dubultspēles",
+
+    "Madrid": "Madrid",
+    "Genoa": "Dženova",
 }

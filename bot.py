@@ -2,7 +2,7 @@ import asyncio
 from playwright.async_api import async_playwright
 import json
 import requests
-from defines import ARBITRAGE_API_LINK, WAGER, X3000_LINK, TONYBET_LINK, SPELET_LINK, TENNIS_COMPETITION_TRANS
+from defines import ARBITRAGE_API_LINK, WAGER, X3000_LINK, TONYBET_LINK, SPELET_LINK, COMPETITION_TRANS, COMPETITION_PARSE
 
 bet_time = False
 winner_info = None
@@ -99,21 +99,21 @@ async def pool_x3000(page):
 
     await page.goto(X3000_LINK)
     await asyncio.sleep(10)
+
+    frame_sel = '[src^="/static/betting-clients/kambi/kambi-client.html?language=lv&outcomeID=true#sports-hub/"]'
+    frame = page.frame_locator(frame_sel)
+
     # Show all sports list
-    # select_sport = page.locator(f'text=Rādīt visus sporta veidus')
-    # await select_sport.click()
+    select_sport = frame.locator(f'text=Rādīt visus sporta veidus')
+    await select_sport.click()
 
     # Wait for the shared variable to be updated
     while True:
         if bet_time:
-
-            frame_sel = '[src^="/static/betting-clients/kambi/kambi-client.html?language=lv&outcomeID=true#sports-hub/tennis"]'
-            frame = page.frame_locator(frame_sel)
-
             # Select sport
             sport_category = winner_info['sport']
             if sport_category == 'Tennis':
-                sport = frame.locator(f'text=Teniss')
+                sport = frame.locator('.KambiBC-navigation-menu__section--sports').locator('.KambiBC-navigation-menu__section-links').locator('li:nth-of-type(3) div')
                 await sport.click()
 
             bet = True
@@ -126,36 +126,32 @@ async def pool_x3000(page):
             if bet:           
                 print ("x3000 entered")
                 try:
-                    # sub_category_element = frame.locator("div.KambiBC-scroller").locator("ul.KambiBC-filter-menu").locator(f"ul.KambiBC-filter-menu:nth-of-type({TENNIS_COMPETITION_TRANS[winner_info["sub_category"]]}) > div")
                     if winner_info['sport'] == 'Tennis':
-                        sub_category_element = frame.locator("div.KambiBC-scroller").locator(f"text={TENNIS_COMPETITION_TRANS[winner_info["competition"]]}")
-                        if sub_category_element:
-                            await sub_category_element.click()
-                            print(f"{sub_category_element} selected.")
-                            await asyncio.sleep(1)
-                            try:
-                                odd_element = frame.locator("ul.KambiBC-sandwich-filter__list").locator(f"text={winner_info[who]["odd"]}")
-                                if await odd_element.is_visible():
-                                    await odd_element.click()
-                                    print(f"{odd_element} selected.")
-                                    await asyncio.sleep(1)
+                        steps = COMPETITION_PARSE["X3000"]["Tennis"][winner_info["competition"]]
+                        for step in steps:
+                            competition_step = frame.locator(f'text={step}')
+                            await competition_step.click()
+                        try:
+                            odd_element = frame.locator("ul.KambiBC-sandwich-filter__list").locator(f"text={winner_info[who]["odd"]}")
+                            if await odd_element.is_visible():
+                                await odd_element.click()
+                                print(f"{odd_element} selected.")
+                                await asyncio.sleep(1)
 
-                                    # Bet Wager
-                                    wager_element = frame.locator("div.mod-KambiBC-betslip").locator("input.mod-KambiBC-stake-input")
-                                    await wager_element.fill(winner_info[who]["wager"])
-                                    bet_btn = frame.locator("button.mod-KambiBC-betslip__place-bet-btn")
-                                    await bet_btn.click()
-                                    bet_slip = frame.locator("button.mod-KambiBC-betslip-button--highlighted")
-                                    await bet_slip.click()
+                                # Bet Wager
+                                wager_element = frame.locator("div.mod-KambiBC-betslip").locator("input.mod-KambiBC-stake-input")
+                                await wager_element.fill(winner_info[who]["wager"])
+                                bet_btn = frame.locator("button.mod-KambiBC-betslip__place-bet-btn")
+                                await bet_btn.click()
+                                bet_slip = frame.locator("button.mod-KambiBC-betslip-button--highlighted")
+                                await bet_slip.click()
 
-                                else:
-                                    print(f"{odd_element} not found.")
-                                    bet_time = False
-                                    old_winner_info = winner_info
-                            except TimeoutError as error:
-                                print(error)
-                        else:
-                            print(f"{sub_category_element} not found.")
+                            else:
+                                print(f"{odd_element} not found.")
+                                bet_time = False
+                                old_winner_info = winner_info
+                        except TimeoutError as error:
+                            print(error)
                 except TimeoutError as error:
                     print(error)
 
@@ -170,7 +166,7 @@ async def run_x3000(playwright):
     global bet_time
     global winner_info
     global old_winner_info
-    global TENNIS_COMPETITION_TRANS
+    global COMPETITION_TRANS
     
     browser = await playwright.chromium.launch(
         headless=False,
@@ -260,10 +256,13 @@ async def run_tonybet(playwright):
     global bet_time
     global winner_info
     global old_winner_info
-    global TENNIS_COMPETITION_TRANS
+    global COMPETITION_TRANS
     
     browser = await playwright.chromium.launch(headless=False)
-    context = await browser.new_context(locale="en-US")
+    context = await browser.new_context(
+        locale="en-US",
+        viewport={"width": 1920, "height": 1080},
+    )
     page = await context.new_page()
 
     await login_tonybet(page)
@@ -333,10 +332,13 @@ async def run_spelet(playwright):
     global bet_time
     global winner_info
     global old_winner_info
-    global TENNIS_COMPETITION_TRANS
+    global COMPETITION_TRANS
     
     browser = await playwright.chromium.launch(headless=False)
-    context = await browser.new_context(locale="en-US")
+    context = await browser.new_context(
+        locale="en-US",
+        viewport={"width": 1920, "height": 1080},
+    )
     page = await context.new_page()
 
     await login_spelet(page)
@@ -346,12 +348,12 @@ async def run_spelet(playwright):
 async def main():
     async with async_playwright() as playwright:
         task_main = asyncio.create_task(run_main_thread())
-        task_x3000 = asyncio.create_task(run_x3000(playwright))
-        # task_tonybet = asyncio.create_task(run_tonybet(playwright))
+        # task_x3000 = asyncio.create_task(run_x3000(playwright))
+        task_tonybet = asyncio.create_task(run_tonybet(playwright))
         # task_spelet = asyncio.create_task(run_spelet(playwright))
 
         # await asyncio.gather(task_main, task_x3000, task_tonybet, task_spelet)
-        await asyncio.gather(task_main, task_x3000)
+        await asyncio.gather(task_main, task_tonybet)
 
 if __name__ == "__main__":
     asyncio.run(main())
