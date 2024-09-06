@@ -1,118 +1,71 @@
 import asyncio
 from playwright.async_api import async_playwright
 import json
+import requests
+from defines import ARBITRAGE_API_LINK, WAGER, X3000_LINK, TONYBET_LINK, SPELET_LINK, TENNIS_COMPETITION_TRANS
 
 bet_time = False
 winner_info = None
 old_winner_info = None
-data_ready = False
 
-tennis_sub_category: dict = {
-    "Grand Slam": "Grand Slam",
-    "ATP": "ATP",
-    "WTA": "WTA",
-    "Challenger": "Challenger",
-    "Challenger Doubles": "Challenger dubultspēles",
-    "ATP Doubles": "ATP Doubles",
-    "ITF Men": "ITF Vīriešu Vienspēles",
-    "ITF Men Doubles": "ITF Vīriešu Dubultspēles",
-    "ITF Men Qual.": "ITF Viriešu Kvalifikācijas Turnīrs",
-    "ITF Women": "ITF Sieviešu Vienspēles",
-    "WTA Doubles": "WTA dubultspēles",
-}
-
-async def extract_info(page) -> dict:
-    data_ready = False
+async def extract_info() -> dict:
     winner: dict = {
         "first": {
-            "name": "",
-            "odd": "",
-            "wager": "",
-            "site": "",
+            "name": "", "odd": "", "wager": "", "site": "",
         },
         "second": {
-            "name": "",
-            "odd": "",
-            "wager": "",
-            "site": "",
+            "name": "", "odd": "", "wager": "", "site": "",
         },
-        "category": "",
-        "sub_category": "",
+        "sport": "",
+        "competition": "",
     }
+    response = requests.get(ARBITRAGE_API_LINK)
+    res = response.json()
+    if res:
+        data = res[0]
+        odd1 = data['odds'][0]['odd_value']
+        odd2 = data['odds'][1]['odd_value']
+        total_implied_probability = float(data['total_implied_probability'])
+        wager1 = WAGER / total_implied_probability / odd1
+        wager2 = WAGER / total_implied_probability / odd2
+        sport = data['sport']
+        competition = data['competition']
+        site1 = data['site_names'][0]
+        site2 = data['site_names'][1]
+        home_name = data['home_team']
+        away_name = data['away_team']
 
-    first_odd = await page.query_selector('#odds1_value')
-    if first_odd:
-        winner["first"]["odd"] = await first_odd.text_content()
-    second_odd = await page.query_selector('#odds2_value')
-    if second_odd:
-        winner["second"]["odd"] = await second_odd.text_content()
-    first_wager = await page.query_selector('#wagger1')
-    if first_wager:
-        first_wager_value = await first_wager.text_content()
-        winner["first"]["wager"] = first_wager_value.split(' ')[1]
-    second_wager = await page.query_selector('#wagger2')
-    if second_wager:
-        second_wager_value = await second_wager.text_content()
-        winner["second"]["wager"] = second_wager_value.split(' ')[1]
-    category_element = await page.query_selector('#competition')
-    if category_element:
-        category_text = await category_element.text_content()
-        winner["category"] = category_text.split(' | ')[0]
-        winner["sub_category"] = category_text.split(' | ')[1]
-    first_site_element = await page.query_selector('#site1')
-    if first_site_element:
-        winner["first"]["site"] = await first_site_element.text_content()
-    second_site_element = await page.query_selector('#site2')
-    if second_site_element:
-        winner["second"]["site"] = await second_site_element.text_content()
-    first_name = await page.query_selector('#home-teams')
-    second_name = await page.query_selector('#away-team')
-    if first_name:
-        winner["first"]["name"] = first_name.text_content()
-    if second_name:
-        winner["second"]["name"] = second_name.text_content()
+        winner["first"]["odd"] = odd1
+        winner["second"]["odd"] = odd2
+        winner["first"]["wager"] = wager1
+        winner["second"]["wager"] = wager2
+        winner["sport"] = sport
+        winner["competition"] = competition
+        winner["first"]["site"] = site1
+        winner["second"]["site"] = site2
+        winner["first"]["name"] = home_name
+        winner["second"]["name"] = away_name
 
-    data_ready = True
     return winner
 
-async def run_rr(playwright):
+async def run_main_thread():
     global bet_time
     global winner_info
     global old_winner_info
     
-    # Launch first browser instance
-    browser = await playwright.chromium.launch(headless=False)
-    context = await browser.new_context()
-    page = await context.new_page()
-
-    # Navigate to the first URL
-    await page.goto("https://www.rr28.xyz/")
-    await asyncio.sleep(40)
-    # text_to_find = "History"
-    # try:
-    #     element = await page.wait_for_selector(f"text={text_to_find}", timeout=5000)
-    #     if element:
-    #         print(f"History entered.")
-    #         await element.click()
-    #         await asyncio.sleep(3)
-    #     else:
-    #         print(f"History button not found.")
-    # except TimeoutError as error:
-    #     print(error)
+    await asyncio.sleep(30) # Delay for loading casinos
 
     while True:
-        winner_info = await extract_info(page)
-        if winner_info is not None and winner_info["sub_category"] != "" and winner_info != old_winner_info:
+        winner_info = await extract_info()
+        if winner_info is not None and winner_info["sport"] != "" and winner_info != old_winner_info:
             if not bet_time:
+                print (winner_info)
                 bet_time = True # Trigger action
 
-        await asyncio.sleep(3)  # Polling delay
-
-    # Keep the browser open for further actions or close it
-    # await browser.close()
+        await asyncio.sleep(1)  # Polling delay
 
 async def login_x3000(page):
-    await page.goto(f"https://www.x3000.lv/betting?flowType=gamingOverview#sports-hub")
+    await page.goto(X3000_LINK)
     await asyncio.sleep(10)
 
     # Login
@@ -143,30 +96,37 @@ async def pool_x3000(page):
     global bet_time
     global winner_info
     global old_winner_info
-    global data_ready
 
-    if data_ready:
-        sport_category = winner_info['category']
-        await page.goto(f"https://www.x3000.lv/betting?flowType=gamingOverview#sports-hub/{sport_category}")
-        await asyncio.sleep(10)
+    await page.goto(X3000_LINK)
+    await asyncio.sleep(10)
+    # Show all sports list
+    # select_sport = page.locator(f'text=Rādīt visus sporta veidus')
+    # await select_sport.click()
 
-        # Wait for the shared variable to be updated
-        while True:
-            if bet_time:
-                bet = True
-                if winner_info["first"]["site"] == "x3000":
-                    who = "first"
-                elif winner_info["second"]["site"] == "x3000":
-                    who = "second"
-                else:
-                    bet = False 
-                if bet:           
-                    print ("x3000 entered")
-                    frame_sel = '[src^="/static/betting-clients/kambi/kambi-client.html?language=lv&outcomeID=true#sports-hub/tennis"]'
-                    frame = page.frame_locator(frame_sel)
-                    try:
-                        # sub_category_element = frame.locator("div.KambiBC-scroller").locator("ul.KambiBC-filter-menu").locator(f"ul.KambiBC-filter-menu:nth-of-type({tennis_sub_category[winner_info["sub_category"]]}) > div")
-                        sub_category_element = frame.locator("div.KambiBC-scroller").locator(f"text={tennis_sub_category[winner_info["sub_category"]]}")
+    # Wait for the shared variable to be updated
+    while True:
+        if bet_time:
+            # Select sport
+            sport_category = winner_info['sport']
+            if sport_category == 'Tennis':
+                sport = page.locator(f'text=Teniss')
+                await sport.click()
+
+            bet = True
+            if winner_info["first"]["site"] == "x3000":
+                who = "first"
+            elif winner_info["second"]["site"] == "x3000":
+                who = "second"
+            else:
+                bet = False 
+            if bet:           
+                print ("x3000 entered")
+                frame_sel = '[src^="/static/betting-clients/kambi/kambi-client.html?language=lv&outcomeID=true#sports-hub/tennis"]'
+                frame = page.frame_locator(frame_sel)
+                try:
+                    # sub_category_element = frame.locator("div.KambiBC-scroller").locator("ul.KambiBC-filter-menu").locator(f"ul.KambiBC-filter-menu:nth-of-type({TENNIS_COMPETITION_TRANS[winner_info["sub_category"]]}) > div")
+                    if winner_info['sport'] == 'Tennis':
+                        sub_category_element = frame.locator("div.KambiBC-scroller").locator(f"text={TENNIS_COMPETITION_TRANS[winner_info["competition"]]}")
                         if sub_category_element:
                             await sub_category_element.click()
                             print(f"{sub_category_element} selected.")
@@ -194,12 +154,12 @@ async def pool_x3000(page):
                                 print(error)
                         else:
                             print(f"{sub_category_element} not found.")
-                    except TimeoutError as error:
-                        print(error)
+                except TimeoutError as error:
+                    print(error)
 
-                    old_winner_info = winner_info
-                    bet_time = False
-            await asyncio.sleep(1)
+                old_winner_info = winner_info
+                bet_time = False
+        await asyncio.sleep(1)
 
     # Keep the browser open for further actions or close it
     # await browser.close()
@@ -208,10 +168,15 @@ async def run_x3000(playwright):
     global bet_time
     global winner_info
     global old_winner_info
-    global tennis_sub_category
+    global TENNIS_COMPETITION_TRANS
     
-    browser = await playwright.chromium.launch(headless=False)
-    context = await browser.new_context(locale="en-US")
+    browser = await playwright.chromium.launch(
+        headless=False,
+    )
+    context = await browser.new_context(
+        locale="en-US",
+        viewport={"width": 1920, "height": 1080},
+    )
     with open('x3000_cookies.json', 'r') as f:
         cookies = json.load(f)
     await context.add_cookies(cookies)
@@ -221,7 +186,7 @@ async def run_x3000(playwright):
     await pool_x3000(page)
       
 async def login_tonybet(page):
-    await page.goto("https://tonybet.lv/en/")
+    await page.goto(TONYBET_LINK)
     await asyncio.sleep(10)
 
     login = page.locator(f'text=Log in')
@@ -244,11 +209,17 @@ async def pool_tonybet(page):
     global winner_info
     global old_winner_info
 
-    await page.goto("https://tonybet.lv/live/tennis")
+    await page.goto(TONYBET_LINK)
     await asyncio.sleep(10)
 
     while True:
         if bet_time:
+            # Select sport
+            sport_category = winner_info['sport']
+            if sport_category == 'Tennis':
+                sport = page.locator(f'text=Teniss')
+                await sport.click()
+
             bet = True
             if winner_info["first"]["site"] == "tonybet":
                 who = "first"
@@ -287,7 +258,7 @@ async def run_tonybet(playwright):
     global bet_time
     global winner_info
     global old_winner_info
-    global tennis_sub_category
+    global TENNIS_COMPETITION_TRANS
     
     browser = await playwright.chromium.launch(headless=False)
     context = await browser.new_context(locale="en-US")
@@ -297,7 +268,7 @@ async def run_tonybet(playwright):
     await pool_tonybet(page)
 
 async def login_spelet(page):
-    await page.goto("https://spelet.lv/")
+    await page.goto(SPELET_LINK)
     await asyncio.sleep(10)
 
     login = page.locator('header').locator(f'text=Come in')
@@ -306,7 +277,7 @@ async def login_spelet(page):
         await login.click()
     else:
         await login_lv.click()
-    await login.click()
+    await asyncio.sleep(2)
     await page.fill('input[name="username"]', "37129227571")
     await page.fill('input[type="password"]', "Upwork1234!")
 
@@ -319,7 +290,7 @@ async def pool_spelet(page):
     global winner_info
     global old_winner_info
 
-    await page.goto("https://spelet.lv/line/tennis")
+    await page.goto(SPELET_LINK)
     await asyncio.sleep(10)
 
     while True:
@@ -360,7 +331,7 @@ async def run_spelet(playwright):
     global bet_time
     global winner_info
     global old_winner_info
-    global tennis_sub_category
+    global TENNIS_COMPETITION_TRANS
     
     browser = await playwright.chromium.launch(headless=False)
     context = await browser.new_context(locale="en-US")
@@ -372,13 +343,13 @@ async def run_spelet(playwright):
 # Main function to run browsers simultaneously
 async def main():
     async with async_playwright() as playwright:
-        task_main = asyncio.create_task(run_rr(playwright))
-        # task_x3000 = asyncio.create_task(run_x3000(playwright))
+        task_main = asyncio.create_task(run_main_thread())
+        task_x3000 = asyncio.create_task(run_x3000(playwright))
         # task_tonybet = asyncio.create_task(run_tonybet(playwright))
-        task_spelet = asyncio.create_task(run_spelet(playwright))
+        # task_spelet = asyncio.create_task(run_spelet(playwright))
 
         # await asyncio.gather(task_main, task_x3000, task_tonybet, task_spelet)
-        await asyncio.gather(task_main, task_spelet)
+        await asyncio.gather(task_main, task_x3000)
 
 if __name__ == "__main__":
     asyncio.run(main())
