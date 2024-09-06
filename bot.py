@@ -106,10 +106,14 @@ async def pool_x3000(page):
     # Wait for the shared variable to be updated
     while True:
         if bet_time:
+
+            frame_sel = '[src^="/static/betting-clients/kambi/kambi-client.html?language=lv&outcomeID=true#sports-hub/tennis"]'
+            frame = page.frame_locator(frame_sel)
+
             # Select sport
             sport_category = winner_info['sport']
             if sport_category == 'Tennis':
-                sport = page.locator(f'text=Teniss')
+                sport = frame.locator(f'text=Teniss')
                 await sport.click()
 
             bet = True
@@ -121,8 +125,6 @@ async def pool_x3000(page):
                 bet = False 
             if bet:           
                 print ("x3000 entered")
-                frame_sel = '[src^="/static/betting-clients/kambi/kambi-client.html?language=lv&outcomeID=true#sports-hub/tennis"]'
-                frame = page.frame_locator(frame_sel)
                 try:
                     # sub_category_element = frame.locator("div.KambiBC-scroller").locator("ul.KambiBC-filter-menu").locator(f"ul.KambiBC-filter-menu:nth-of-type({TENNIS_COMPETITION_TRANS[winner_info["sub_category"]]}) > div")
                     if winner_info['sport'] == 'Tennis':
