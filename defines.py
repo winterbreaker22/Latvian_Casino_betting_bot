@@ -5,6 +5,27 @@ SPELET_LINK = 'https://spelet.lv/'
 
 WAGER = 100
 
+COMPETITION_TRANS: dict = {
+    "Tennis": "Teniss",
+    "Football": "Futbols",
+    "Baseball": "Beisbols",
+
+    "Grand Slam": "Grand Slam",
+    "ATP": "ATP",
+    "WTA": "WTA",
+    "Challenger": "Challenger",
+    "Challenger Doubles": "Challenger dubultspēles",
+    "ATP Doubles": "ATP Doubles",
+    "ITF Men": "ITF Vīriešu Vienspēles",
+    "ITF Men Doubles": "ITF Vīriešu Dubultspēles",
+    "ITF Men Qual.": "ITF Viriešu Kvalifikācijas Turnīrs",
+    "ITF Women": "ITF Sieviešu Vienspēles",
+    "WTA Doubles": "WTA dubultspēles",
+
+    "Madrid": "Madrid",
+    "Genoa": "Dženova",
+}
+
 COMPETITION_PARSE: dict = {
     "X3000": {
         "Tennis": {
@@ -26,25 +47,4 @@ COMPETITION_PARSE: dict = {
             ],
         },
     },
-}
-
-COMPETITION_TRANS: dict = {
-    "Tennis": "Teniss",
-    "Football": "Futbols",
-    "Baseball": "Beisbols",
-
-    "Grand Slam": "Grand Slam",
-    "ATP": "ATP",
-    "WTA": "WTA",
-    "Challenger": "Challenger",
-    "Challenger Doubles": "Challenger dubultspēles",
-    "ATP Doubles": "ATP Doubles",
-    "ITF Men": "ITF Vīriešu Vienspēles",
-    "ITF Men Doubles": "ITF Vīriešu Dubultspēles",
-    "ITF Men Qual.": "ITF Viriešu Kvalifikācijas Turnīrs",
-    "ITF Women": "ITF Sieviešu Vienspēles",
-    "WTA Doubles": "WTA dubultspēles",
-
-    "Madrid": "Madrid",
-    "Genoa": "Dženova",
 }
