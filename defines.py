@@ -49,6 +49,10 @@ COMPETITION_PARSE: dict = {
                 "ITF Women",
                 "Kursumlijska Banja",
             ],
+            "ITF. Tehran": [
+                "ITF Men",
+                "Tehran",
+            ],
         },
     },
 }
