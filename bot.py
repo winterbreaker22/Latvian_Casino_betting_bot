@@ -23,8 +23,8 @@ async def extract_info() -> dict:
     res = response.json()
     if res:
         data = res[0]
-        odd1 = data['odds'][0]['odd_value']
-        odd2 = data['odds'][1]['odd_value']
+        odd1 = float(data['odds'][0]['odd_value'])
+        odd2 = float(data['odds'][1]['odd_value'])
         total_implied_probability = float(data['total_implied_probability'])
         wager1 = WAGER / total_implied_probability / odd1
         wager2 = WAGER / total_implied_probability / odd2
@@ -140,7 +140,8 @@ async def pool_x3000(page):
 
                                 # Bet Wager
                                 wager_element = frame.locator("div.mod-KambiBC-betslip").locator("input.mod-KambiBC-stake-input")
-                                await wager_element.fill(winner_info[who]["wager"])
+                                # await wager_element.fill(winner_info[who]["wager"])
+                                await wager_element.fill("0.1")
                                 bet_btn = frame.locator("button.mod-KambiBC-betslip__place-bet-btn")
                                 await bet_btn.click()
                                 bet_slip = frame.locator("button.mod-KambiBC-betslip-button--highlighted")
@@ -348,12 +349,12 @@ async def run_spelet(playwright):
 async def main():
     async with async_playwright() as playwright:
         task_main = asyncio.create_task(run_main_thread())
-        # task_x3000 = asyncio.create_task(run_x3000(playwright))
-        task_tonybet = asyncio.create_task(run_tonybet(playwright))
+        task_x3000 = asyncio.create_task(run_x3000(playwright))
+        # task_tonybet = asyncio.create_task(run_tonybet(playwright))
         # task_spelet = asyncio.create_task(run_spelet(playwright))
 
         # await asyncio.gather(task_main, task_x3000, task_tonybet, task_spelet)
-        await asyncio.gather(task_main, task_tonybet)
+        await asyncio.gather(task_main, task_x3000)
 
 if __name__ == "__main__":
     asyncio.run(main())

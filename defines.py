@@ -45,6 +45,10 @@ COMPETITION_PARSE: dict = {
                 "Challenger Doubles",
                 "Cassis",
             ],
+            "ITF. Kursumlijska Banja": [
+                "ITF Women",
+                "Kursumlijska Banja",
+            ],
         },
     },
 }
