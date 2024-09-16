@@ -2,22 +2,17 @@ from playwright.sync_api import sync_playwright
 from threading import Thread
 import time
 
-# Shared variable (use a global variable or a shared object for more complex scenarios)
 shared_variable = None
 
-# Function to run the first browser and update the shared variable
 def run_first_browser(playwright):
     global shared_variable
     
-    # Launch first browser instance
     browser = playwright.chromium.launch(headless=False)
     context = browser.new_context()
     page = context.new_page()
 
-    # Navigate to the first URL
     page.goto("https://example.com/first-url")
 
-    # Simulate some action that updates the shared variable
     while True:
         # Check for some condition on the page (e.g., element appears or text changes)
         if page.locator("selector-for-variable").is_visible():
