@@ -2,7 +2,8 @@ import asyncio
 from playwright.async_api import async_playwright
 import json
 import requests
-from defines import ARBITRAGE_API_LINK, WAGER, X3000_LINK, TONYBET_LINK, SPELET_LINK, COMPETITION_TRANS, COMPETITION_PARSE
+from defines import ARBITRAGE_API_LINK, WAGER, X3000_LINK, TONYBET_LINK, SPELET_LINK, COMPETITION_TRANS, COMPETITION_PARSE,
+                    TTBET_LINK,
 
 bet_time = False
 winner_info = None
@@ -344,6 +345,80 @@ async def run_spelet(playwright):
 
     await login_spelet(page)
     await pool_spelet(page)
+
+async def login_22bet(page):
+    await page.goto(TTBET_LINK)
+    await asyncio.sleep(10)
+
+    login = page.locator('#curLoginForm').locator('text=Log in')
+    await login.click()
+    await asyncio.sleep(2)
+    email = page.locator('.loginDropTop_div form').locator('input[type="text"]')
+    await page.fill(email, "37129227571")
+    password = page.locator('.loginDropTop_div form').locator('input[type="password"]')
+    await page.fill(password, "Upwork1234!")
+
+    login_btn = page.locator('.loginDropTop_div form').locator('text=Log in')
+    await login_btn.click()
+    await asyncio.sleep(10)
+
+async def pool_22bet(page):
+    global bet_time
+    global winner_info
+    global old_winner_info
+
+    await page.goto(TTBET_LINK)
+    await asyncio.sleep(10)
+
+    while True:
+        if bet_time:
+            bet = True
+            if winner_info["first"]["site"] == "22bet":
+                who = "first"
+            elif winner_info["second"]["site"] == "22bet":
+                who = "second"
+            else:
+                bet = False 
+            if bet:  
+                print ("22bet entered")
+                try:
+                    odd_element = page.locator(f"text={winner_info[who]["odd"]}")
+                    if await odd_element.is_visible():
+                        await odd_element.click()
+                        print(f"{odd_element} selected.")
+                        await asyncio.sleep(1)
+
+                        # Bet Wager
+                        wager_element = page.locator("#remote-view .coupon-main-tab__content .coupon-amount").locator("input[type='text']")
+                        await wager_element.fill(winner_info[who]["wager"])
+                        bet_btn = page.locator("#remote-view .coupon-main-tab__content .coupon-buttons").locator('button[type="button"]')
+                        await bet_btn.click()
+                        
+                    else:
+                        print(f"{odd_element} not found.")
+                        bet_time = False
+                        old_winner_info = winner_info
+                except TimeoutError as error:
+                    print (error)
+
+                bet_time = False
+        await asyncio.sleep(1)   
+
+async def run_22bet(playwright):
+    global bet_time
+    global winner_info
+    global old_winner_info
+    global COMPETITION_TRANS
+    
+    browser = await playwright.chromium.launch(headless=False)
+    context = await browser.new_context(
+        locale="en-US",
+        viewport={"width": 1920, "height": 1080},
+    )
+    page = await context.new_page()
+
+    await login_22bet(page)
+    await pool_22bet(page)
 
 # Main function to run browsers simultaneously
 async def main():
