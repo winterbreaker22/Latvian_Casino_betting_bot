@@ -370,6 +370,9 @@ async def pool_22bet(page):
     await page.goto(TTBET_LINK)
     await asyncio.sleep(10)
 
+    sport = page.locator('#sports_left').locator('text=Tennis')
+    
+
     while True:
         if bet_time:
             bet = True
