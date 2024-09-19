@@ -3,7 +3,7 @@ from playwright.async_api import async_playwright
 import json
 import requests
 from defines import ARBITRAGE_API_LINK, WAGER, X3000_LINK, TONYBET_LINK, SPELET_LINK, COMPETITION_TRANS, COMPETITION_PARSE,
-                    TTBET_LINK,
+                    TTBET_LINK, UNIBET_LINK
 
 bet_time = False
 winner_info = None
