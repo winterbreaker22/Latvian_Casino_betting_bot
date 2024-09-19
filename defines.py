@@ -3,6 +3,7 @@ X3000_LINK = 'https://www.x3000.lv/betting?flowType=gamingOverview#sports-hub/'
 TONYBET_LINK = 'https://tonybet.lv/en/'
 SPELET_LINK = 'https://spelet.lv/'
 TTBET_LINK = 'https://22betin.com/'
+UNIBET_LINK = 'https://www.unibet.com/'
 
 WAGER = 100
 
