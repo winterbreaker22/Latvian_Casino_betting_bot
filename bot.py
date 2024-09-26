@@ -316,7 +316,7 @@ async def pool_spelet(page):
             # Select sport
             sport_category = winner_info['sport']
             if sport_category == 'Tennis':
-                sport = frame.locator('.KambiBC-navigation-menu__section--sports').locator('.KambiBC-navigation-menu__section-links').locator('li:nth-of-type(3) div')
+                sport = page.locator('.nav-sport-menu-app').locator('text=Tennis')
                 await sport.click()
 
             bet = True
