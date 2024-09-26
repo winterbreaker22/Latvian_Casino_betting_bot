@@ -312,6 +312,13 @@ async def pool_spelet(page):
 
     while True:
         if bet_time:
+
+            # Select sport
+            sport_category = winner_info['sport']
+            if sport_category == 'Tennis':
+                sport = frame.locator('.KambiBC-navigation-menu__section--sports').locator('.KambiBC-navigation-menu__section-links').locator('li:nth-of-type(3) div')
+                await sport.click()
+
             bet = True
             if winner_info["first"]["site"] == "spelet":
                 who = "first"
