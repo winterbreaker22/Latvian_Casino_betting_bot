@@ -101,6 +101,13 @@ async def pool_x3000(page):
     await page.goto(X3000_LINK)
     await asyncio.sleep(10)
 
+    # Change to English
+    language_select = page.locator('#headlessui-listbox-button-:R3al36:')
+    await language_select.click()
+    English_select = page.locator('#headlessui-listbox-options-:re: li:last-of-type span')
+    await English_select.click()
+    await asyncio.sleep(3)
+
     frame_sel = '[src^="/static/betting-clients/kambi/kambi-client.html?language=lv&outcomeID=true#sports-hub/"]'
     frame = page.frame_locator(frame_sel)
 
