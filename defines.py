@@ -1,7 +1,7 @@
 ARBITRAGE_API_LINK = 'https://api.rr28.xyz/arbitrages/active/'
 X3000_LINK = 'https://www.x3000.lv/betting?flowType=gamingOverview#sports-hub/'
 TONYBET_LINK = 'https://tonybet.lv/en/'
-SPELET_LINK = 'https://spelet.lv/'
+SPELET_LINK = 'https://spelet.lv/en/line'
 TTBET_LINK = 'https://22betin.com/'
 UNIBET_LINK = 'https://www.unibet.com/'
 
