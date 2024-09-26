@@ -112,7 +112,7 @@ async def pool_x3000(page):
     frame = page.frame_locator(frame_sel)
 
     # Show all sports list
-    select_sport = frame.locator(f'text=Rādīt visus sporta veidus')
+    select_sport = frame.locator(f'text=All Sports')
     await select_sport.click()
 
     # Wait for the shared variable to be updated
@@ -302,6 +302,13 @@ async def pool_spelet(page):
 
     await page.goto(SPELET_LINK)
     await asyncio.sleep(10)
+
+    # Change to English
+    language_select = page.locator('header button.css-selt3s')
+    await language_select.click()
+    English_select = page.locator('header ul li:first-of-type span').click()
+    await English_select.click()
+    await asyncio.sleep(3)
 
     while True:
         if bet_time:
