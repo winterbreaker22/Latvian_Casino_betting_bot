@@ -312,7 +312,6 @@ async def pool_spelet(page):
 
     while True:
         if bet_time:
-
             # Select sport
             sport_category = winner_info['sport']
             if sport_category == 'Tennis':
