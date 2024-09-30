@@ -175,7 +175,6 @@ async def run_x3000(playwright):
     global bet_time
     global winner_info
     global old_winner_info
-    global COMPETITION_TRANS
     
     browser = await playwright.chromium.launch(
         headless=False,
@@ -265,7 +264,6 @@ async def run_tonybet(playwright):
     global bet_time
     global winner_info
     global old_winner_info
-    global COMPETITION_TRANS
     
     browser = await playwright.chromium.launch(headless=False)
     context = await browser.new_context(
@@ -354,7 +352,6 @@ async def run_spelet(playwright):
     global bet_time
     global winner_info
     global old_winner_info
-    global COMPETITION_TRANS
     
     browser = await playwright.chromium.launch(headless=False)
     context = await browser.new_context(
@@ -431,7 +428,6 @@ async def run_22bet(playwright):
     global bet_time
     global winner_info
     global old_winner_info
-    global COMPETITION_TRANS
     
     browser = await playwright.chromium.launch(headless=False)
     context = await browser.new_context(
