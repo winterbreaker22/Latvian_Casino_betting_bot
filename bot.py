@@ -91,7 +91,7 @@ async def login_x3000(page):
     await login_btn.click()
     await asyncio.sleep(10)
 
-    deposit_close = page.locator('#flow-content-container svg')
+    deposit_close = page.locator('[id="flow-content-container"]').locator('svg')
     if await deposit_close.is_visible():
         await deposit_close.click()
 
@@ -104,9 +104,10 @@ async def pool_x3000(page):
     await asyncio.sleep(10)
 
     # Change to English
-    language_select = page.locator('#headlessui-listbox-button-:R3al36:')
+    language_select = page.locator('[id="headlessui-listbox-button-:R3al36:"]')
+    await language_select.scroll_into_view_if_needed()
     await language_select.click()
-    English_select = page.locator('#headlessui-listbox-options-:re: li:last-of-type span')
+    English_select = page.locator('[id="headlessui-listbox-options-:re: li:last-of-type span"]')
     await English_select.click()
     await asyncio.sleep(3)
 
