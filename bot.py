@@ -91,9 +91,9 @@ async def login_x3000(page):
     await login_btn.click()
     await asyncio.sleep(10)
 
-    unnecessary = page.locator('#flow-content-container path:first-of-type')
-    if await unnecessary.is_visible():
-        await unnecessary.click()
+    deposit_close = page.locator('#flow-content-container svg')
+    if await deposit_close.is_visible():
+        await deposit_close.click()
 
 async def pool_x3000(page):
     global bet_time
