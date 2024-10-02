@@ -118,7 +118,6 @@ async def pool_x3000(page):
     select_sport = frame.locator(f'text=All Sports')
     await select_sport.click()
 
-    # Wait for the shared variable to be updated
     while True:
         if bet_time:
             # Select sport
