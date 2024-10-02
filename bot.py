@@ -447,11 +447,11 @@ async def main():
     async with async_playwright() as playwright:
         task_main = asyncio.create_task(run_main_thread())
         task_x3000 = asyncio.create_task(run_x3000(playwright))
-        # task_tonybet = asyncio.create_task(run_tonybet(playwright))
-        # task_spelet = asyncio.create_task(run_spelet(playwright))
+        task_tonybet = asyncio.create_task(run_tonybet(playwright))
+        task_spelet = asyncio.create_task(run_spelet(playwright))
 
-        # await asyncio.gather(task_main, task_x3000, task_tonybet, task_spelet)
-        await asyncio.gather(task_main, task_x3000)
+        await asyncio.gather(task_main, task_x3000, task_tonybet, task_spelet)
+        # await asyncio.gather(task_main, task_x3000)
 
 if __name__ == "__main__":
     asyncio.run(main())
