@@ -65,7 +65,7 @@ async def run_main_thread():
                 print (winner_info)
                 bet_time = True # Trigger action
 
-        await asyncio.sleep(1)  # Polling delay
+        await asyncio.sleep(1)
 
 async def login_x3000(page):
     await page.goto(X3000_LINK)
