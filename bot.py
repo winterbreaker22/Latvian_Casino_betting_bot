@@ -413,7 +413,8 @@ async def pool_22bet(page):
 
                         # Bet Wager
                         wager_element = page.locator("#remote-view .coupon-main-tab__content .coupon-amount").locator("input[type='text']")
-                        await wager_element.fill(winner_info[who]["wager"])
+                        # await wager_element.fill(winner_info[who]["wager"])
+                        await wager_element.fill('0.1')
                         bet_btn = page.locator("#remote-view .coupon-main-tab__content .coupon-buttons").locator('button[type="button"]')
                         await bet_btn.click()
                         
