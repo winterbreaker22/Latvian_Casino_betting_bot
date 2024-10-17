@@ -411,7 +411,7 @@ async def pool_22bet(page):
                         print(f"{odd_element} selected.")
                         await asyncio.sleep(1)
 
-                        # Bet Wager
+                        # Bet Wager Input
                         wager_element = page.locator("#remote-view .coupon-main-tab__content .coupon-amount").locator("input[type='text']")
                         # await wager_element.fill(winner_info[who]["wager"])
                         await wager_element.fill('0.1')
