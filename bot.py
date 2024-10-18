@@ -452,7 +452,6 @@ async def main():
         # task_spelet = asyncio.create_task(run_spelet(playwright))
 
         await asyncio.gather(task_main, task_x3000, task_tonybet)
-        # await asyncio.gather(task_main, task_x3000)
 
 if __name__ == "__main__":
     asyncio.run(main())
