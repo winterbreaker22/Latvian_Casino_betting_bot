@@ -37,26 +37,26 @@ async def extract_from_xx(page) -> dict:
         "category": "",
     }
 
-    first_odd = await page.query_selector('tr:first-of-type td:nth-of-type(4) h2:first-of-type')
-    winner["first"]["odd"] = await first_odd.text_content()
-    second_odd = await page.query_selector('tr:first-of-type td:nth-of-type(4) h2:last-of-type')
-    winner["second"]["odd"] = await second_odd.text_content()
-    first_wager = await page.query_selector('tr:first-of-type td:nth-of-type(5) h3:first-of-type')
-    first_wager_value = await first_wager.text_content()
-    second_wager = await page.query_selector('tr:first-of-type td:nth-of-type(5) h3:last-of-type')
-    second_wager_value = await second_wager.text_content()
-    winner["first"]["wager"] = first_wager_value.split(' ')[1]
-    winner["second"]["wager"] = second_wager_value.split(' ')[1]
-    category_element = await page.query_selector('tr:first-of-type td:first-of-type > span:nth-of-type(2)')
-    winner["category"] = await category_element.text_content()
-    first_site_element = await page.query_selector('tr:first-of-type td:last-of-type a:first-of-type')
-    winner["first"]["site"] = await first_site_element.text_content()
-    second_site_element = await page.query_selector('tr:first-of-type td:last-of-type a:last-of-type')
-    winner["second"]["site"] = await second_site_element.text_content()
-    name = await page.query_selector('tr:first-of-type td:first-of-type h2')
-    both_name = await name.text_content()
-    winner["first"]["name"] = both_name.split('vs.')[0].strip()
-    winner["second"]["name"] = both_name.split('vs.')[1].strip()
+    # first_odd = await page.query_selector('tr:first-of-type td:nth-of-type(4) h2:first-of-type')
+    # winner["first"]["odd"] = await first_odd.text_content()
+    # second_odd = await page.query_selector('tr:first-of-type td:nth-of-type(4) h2:last-of-type')
+    # winner["second"]["odd"] = await second_odd.text_content()
+    # first_wager = await page.query_selector('tr:first-of-type td:nth-of-type(5) h3:first-of-type')
+    # first_wager_value = await first_wager.text_content()
+    # second_wager = await page.query_selector('tr:first-of-type td:nth-of-type(5) h3:last-of-type')
+    # second_wager_value = await second_wager.text_content()
+    # winner["first"]["wager"] = first_wager_value.split(' ')[1]
+    # winner["second"]["wager"] = second_wager_value.split(' ')[1]
+    # category_element = await page.query_selector('tr:first-of-type td:first-of-type > span:nth-of-type(2)')
+    # winner["category"] = await category_element.text_content()
+    # first_site_element = await page.query_selector('tr:first-of-type td:last-of-type a:first-of-type')
+    # winner["first"]["site"] = await first_site_element.text_content()
+    # second_site_element = await page.query_selector('tr:first-of-type td:last-of-type a:last-of-type')
+    # winner["second"]["site"] = await second_site_element.text_content()
+    # name = await page.query_selector('tr:first-of-type td:first-of-type h2')
+    # both_name = await name.text_content()
+    # winner["first"]["name"] = both_name.split('vs.')[0].strip()
+    # winner["second"]["name"] = both_name.split('vs.')[1].strip()
 
     return winner
 
